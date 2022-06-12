@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% block title %}
+    |Bike Rental
+{% endblock title %}
+
+{% block script %}
+    
+
+{% endblock script %}
+
+{% block style %}
+    .flexbox-container{
+        display: flex;
+        flex-direction: row;
+    }
+   
+    .flexbox-item{
+        width: 100%;
+        margin:10px;
+        border: 1px solid black;
+        background-color:yellow;
+        
+    }
+    .item-1{
+        width:20%;
+        height:100%;
+        padding:20px;
+    }
+    .item-2{
+        width: 75%;
+        height:100%;
+        padding:20px;
+        {% comment %} display: flex;
+        flex-flow: row wrap; {% endcomment %}
+    }
+    .filter{
+        display: flex;
+        flex-flow: row wrap; 
+        justify-content: space-around; 
+    }
+    .suggested{
+        display: flex;
+        flex-flow: row wrap; 
+        justify-content: space-around; 
+    }
+    .card{
+        width: 25%;
+        text-align:center;
+        margin:30px;
+        padding:10px;
+        
+    }
+    .card-body{
+        margin:10px;
+    }
+
+{% endblock style %}
+
+{% block content %}
+<h3>Welcome to {{city_name}} Bike Rental Sytem</h3> 
+<hr>
+
+<div class="flexbox-container">
+    <div class="flexbox-item item-1">
+        
+        <form action=""method="POST">
+            <h4>Serach by date</h4>
+            {% csrf_token %}
+            <table>
+                {{form.as_table}}
+            </table>
+            <hr>
+            <h4>Search by Location</h4>
+            <div class="print_slocation"></div>
+            {% for location in locations %}
+                <input type="checkbox" name="select_location" value="{{location.id}}" class="selected_location" id ="{{location.name}}">{{location.name}}</input>
+                <br>
+            {% endfor %}
+            <hr>
+            <h4>Search By Bike Model</h4>
+            <div class="print_smodels"></div>
+            {% for model in models_in_city %}
+                <input type="checkbox" name="selectmodel" value="{{model.id}}" class="selected_model" id="{{model.name}}">{{model.name}}</input>
+                <br>
+            {% endfor %}
+            <button type="submit">Apply Filters</button>
+        </form>
+
+    </div>
+    <div class="flexbox-item item-2">
+        {% if filter_bike_models %}
+            <h3><b>Filtered Bike Models </b>
+            </h3>
+            <div class="filter">
+                {% for model in filter_bike_models %}
+                    <div class="card">
+                        <div class="card-head">
+                            <b>{{ model}}</b>
+                        </div>
+                        <div class="card-body"> 
+                            <img src="{{model.image.url}}" alt="model_image">
+                            
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                Available Locations
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                    {% for location in model.available_locations %}
+                                        {% if location in locations %}
+                                            <li><a class="dropdown-item" href="#">{{location}}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div text-align="center">
+                                <table text-align="center" cellspacing="5px" cellpadding="5px">
+                                    <tr>
+                                        <td>{{pick_time}}</td>
+                                        <td rowspan="2"><b>TO</b></td>
+                                        <td>{{drop_time}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{pick_date}}</td>
+                                        <td>{{drop_date}}</td>
+                                    </tr>
+                                    
+                                </table>
+                            </div>
+                            Cost: {% widthratio duration 1 model.duration_cost %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        
+        {% endif %}
+        
+        
+        {% if suggested_bike_models %}
+            <hr>
+            <h3><b>Suggested Bikes Models </b>
+            </h3>
+            <div class="suggested">
+                {% for model in suggested_bike_models %}
+                    <div class="card">
+                        <div class="card-head">
+                            <b>{{ model}}</b>
+                        </div>
+                        <div class="card-body"> 
+                            <img src="{{model.image.url}}" alt="model_image">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                Available Locations
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                    {% for location in model.available_locations %}
+                                        
+                                        {% if location in locations %}
+                                            <li><a class="dropdown-item" href="#">{{location}}</a></li>
+                                        {% endif %}
+                                            
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div>
+                                <table text-align="center" cellspacing="5px" cellpadding="5px">
+                                    <tr>
+                                        <td>{{pick_time}}</td>
+                                        <td rowspan="2"><b>TO</b></td>
+                                        <td><small>{{drop_time}}</small></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{pick_date}}</td>
+                                        <td>{{drop_date}}</td>
+                                    </tr>
+
+                                </table>
+                            </div>
+                            Cost: {% widthratio duration 1 model.duration_cost %}
+                        </div>
+                    
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+            
+    </div>
+</div>
+
+
+{% endblock content %}
